@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FraudShield | Credit Card Fraud Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="nav">
+  <div class="brand"><span>◈</span> FraudShield</div>
+  <div class="badge">AI FRAUD DETECTION</div>
+</header>
 
+<main class="container">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">REAL-TIME TRANSACTION ANALYSIS</p>
+      <h1>Credit Card<br><span>Fraud Detection</span></h1>
+      <p class="sub">Evaluate transaction risk with an intelligent fraud scoring interface.</p>
+    </div>
+    <div class="shield">🛡️</div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Transaction Details</h2>
+      <p class="muted">Enter the transaction information below.</p>
+      <form id="form">
+        <label>Transaction Amount
+          <input id="amount" type="number" min="0" step="0.01" placeholder="e.g. 1250" required>
+        </label>
+        <div class="two">
+          <label>Transaction Hour
+            <input id="hour" type="number" min="0" max="23" value="12" required>
+          </label>
+          <label>Distance from usual location (km)
+            <input id="distance" type="number" min="0" step="0.1" value="10" required>
+          </label>
+        </div>
+        <label>Transactions in last hour
+          <input id="velocity" type="number" min="0" step="1" value="1" required>
+        </label>
+        <label class="check"><input id="international" type="checkbox"> International transaction</label>
+        <button type="submit">Analyze Transaction <span>→</span></button>
+      </form>
+    </div>
+
+    <div class="card result-card">
+      <div class="result-head">
+        <div><p class="eyebrow">ANALYSIS RESULT</p><h2 id="result">Waiting for transaction</h2></div>
+        <div id="icon" class="result-icon">?</div>
+      </div>
+      <div class="score-wrap">
+        <div class="score" id="score">0%</div>
+        <div class="ring" id="ring"><div class="ring-inner"></div></div>
+      </div>
+      <div class="stats">
+        <div><span>Fraud Probability</span><strong id="fraud">0%</strong></div>
+        <div><span>Legitimate Probability</span><strong id="legit">100%</strong></div>
+        <div><span>Risk Level</span><strong id="risk">—</strong></div>
+      </div>
+      <p id="note" class="note">Submit a transaction to calculate its risk score.</p>
+    </div>
+  </section>
+
+  <section class="info">
+    <div><b>01</b><span>Enter transaction features</span></div>
+    <div><b>02</b><span>Analyze risk indicators</span></div>
+    <div><b>03</b><span>Review probability score</span></div>
+  </section>
+</main>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
