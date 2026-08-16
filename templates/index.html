@@ -1,290 +1,269 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Nived Kumar Nagula | FraudShield</title>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-  <!-- Header -->
-  <header class="nav">
-    <div class="owner">Nived Kumar Nagula</div>
+<header class="nav">
 
-    <div class="brand">
-      <span>◈</span> FraudShield
+  <div class="owner">
+    Nived Kumar Nagula
+  </div>
+
+  <div class="brand">
+    <span>◈</span> FraudShield
+  </div>
+
+  <div class="badge">
+    XGBOOST ML
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <section class="hero">
+
+    <div>
+
+      <p class="eyebrow">
+        MACHINE LEARNING TRANSACTION ANALYSIS
+      </p>
+
+      <h1>
+        Credit Card<br>
+        <span>Fraud Detection</span>
+      </h1>
+
+      <p class="sub">
+        Upload a transaction CSV and get a model-based
+        fraud probability using a trained XGBoost classifier.
+      </p>
+
     </div>
 
-    <div class="badge">
-      AI FRAUD DETECTION
+    <div class="shield">
+      🛡️
     </div>
-  </header>
+
+  </section>
 
 
-  <!-- Main Content -->
-  <main class="container">
-
-    <!-- Hero Section -->
-    <section class="hero">
-
-      <div>
-        <p class="eyebrow">
-          REAL-TIME TRANSACTION ANALYSIS
-        </p>
-
-        <h1>
-          Credit Card<br>
-          <span>Fraud Detection</span>
-        </h1>
-
-        <p class="sub">
-          Evaluate transaction risk with an intelligent fraud scoring interface.
-        </p>
-      </div>
-
-      <div class="shield">
-        🛡️
-      </div>
-
-    </section>
+  <section class="grid">
 
 
-    <!-- Dashboard -->
-    <section class="grid">
+    <!-- Upload Card -->
 
-      <!-- Transaction Form -->
-      <div class="card">
+    <div class="card">
 
-        <h2>Transaction Details</h2>
+      <h2>
+        Analyze Transaction
+      </h2>
 
-        <p class="muted">
-          Enter the transaction information below.
-        </p>
-
-        <form id="form">
-
-          <label>
-            Transaction Amount
-
-            <input
-              id="amount"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="e.g. 1250"
-              required
-            >
-          </label>
+      <p class="muted">
+        Upload a CSV containing the 30 model features:
+        Time, V1–V28 and Amount.
+      </p>
 
 
-          <div class="two">
+      <form id="uploadForm">
 
-            <label>
-              Transaction Hour
+        <label class="upload">
 
-              <input
-                id="hour"
-                type="number"
-                min="0"
-                max="23"
-                value="12"
-                required
-              >
-            </label>
-
-
-            <label>
-              Distance from usual location (km)
-
-              <input
-                id="distance"
-                type="number"
-                min="0"
-                step="0.1"
-                value="10"
-                required
-              >
-            </label>
-
-          </div>
-
-
-          <label>
-            Transactions in last hour
-
-            <input
-              id="velocity"
-              type="number"
-              min="0"
-              step="1"
-              value="1"
-              required
-            >
-          </label>
-
-
-          <label class="check">
-
-            <input
-              id="international"
-              type="checkbox"
-            >
-
-            International transaction
-
-          </label>
-
-
-          <button type="submit">
-            Analyze Transaction
-            <span>→</span>
-          </button>
-
-        </form>
-
-      </div>
-
-
-      <!-- Result Card -->
-      <div class="card result-card">
-
-        <div class="result-head">
-
-          <div>
-
-            <p class="eyebrow">
-              ANALYSIS RESULT
-            </p>
-
-            <h2 id="result">
-              Waiting for transaction
-            </h2>
-
-          </div>
-
-
-          <div
-            id="icon"
-            class="result-icon"
+          <input
+            id="file"
+            type="file"
+            accept=".csv"
+            required
           >
-            ?
-          </div>
+
+          <span id="fileName">
+            Choose transaction CSV
+          </span>
+
+        </label>
+
+
+        <button type="submit">
+          Analyze with XGBoost
+          <span>→</span>
+        </button>
+
+      </form>
+
+
+      <p class="hint">
+
+        For a quick test, use the included
+        sample transaction CSV files.
+
+      </p>
+
+
+      <div class="sample-links">
+
+        <a href="/sample_legitimate_transaction.csv">
+          Download legitimate sample
+        </a>
+
+        <a href="/sample_fraud_transaction.csv">
+          Download fraud sample
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- Result Card -->
+
+    <div class="card result-card">
+
+      <div class="result-head">
+
+        <div>
+
+          <p class="eyebrow">
+            MODEL RESULT
+          </p>
+
+          <h2 id="result">
+            Waiting for transaction
+          </h2>
 
         </div>
 
 
-        <!-- Score -->
-        <div class="score-wrap">
-
-          <div
-            class="score"
-            id="score"
-          >
-            0%
-          </div>
-
-
-          <div
-            class="ring"
-            id="ring"
-          >
-
-            <div class="ring-inner"></div>
-
-          </div>
-
-        </div>
-
-
-        <!-- Statistics -->
-        <div class="stats">
-
-          <div>
-            <span>
-              Fraud Probability
-            </span>
-
-            <strong id="fraud">
-              0%
-            </strong>
-          </div>
-
-
-          <div>
-            <span>
-              Legitimate Probability
-            </span>
-
-            <strong id="legit">
-              100%
-            </strong>
-          </div>
-
-
-          <div>
-            <span>
-              Risk Level
-            </span>
-
-            <strong id="risk">
-              —
-            </strong>
-          </div>
-
-        </div>
-
-
-        <p
-          id="note"
-          class="note"
+        <div
+          id="icon"
+          class="result-icon"
         >
-          Submit a transaction to calculate its risk score.
-        </p>
+          ?
+        </div>
 
       </div>
 
-    </section>
 
+      <div class="score-wrap">
 
-    <!-- Information Section -->
-    <section class="info">
+        <div
+          class="score"
+          id="score"
+        >
+          0%
+        </div>
 
-      <div>
-        <b>01</b>
-        <span>
-          Enter transaction features
-        </span>
+        <div
+          class="ring"
+          id="ring"
+        >
+
+          <div class="ring-inner"></div>
+
+        </div>
+
       </div>
 
 
-      <div>
-        <b>02</b>
-        <span>
-          Analyze risk indicators
-        </span>
+      <div class="stats">
+
+        <div>
+
+          <span>
+            Fraud Probability
+          </span>
+
+          <strong id="fraud">
+            0%
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Legitimate Probability
+          </span>
+
+          <strong id="legit">
+            100%
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Risk Level
+          </span>
+
+          <strong id="risk">
+            —
+          </strong>
+
+        </div>
+
       </div>
 
 
-      <div>
-        <b>03</b>
-        <span>
-          Review probability score
-        </span>
-      </div>
+      <p
+        id="note"
+        class="note"
+      >
+        Upload a transaction to calculate
+        the model probability.
+      </p>
 
-    </section>
+    </div>
 
-  </main>
+  </section>
 
 
-  <!-- JavaScript -->
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <!-- Process -->
+
+  <section class="info">
+
+    <div>
+      <b>01</b>
+      <span>
+        Upload transaction features
+      </span>
+    </div>
+
+
+    <div>
+      <b>02</b>
+      <span>
+        XGBoost predicts fraud probability
+      </span>
+    </div>
+
+
+    <div>
+      <b>03</b>
+      <span>
+        Review risk and confidence
+      </span>
+    </div>
+
+  </section>
+
+
+</main>
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 </html>
-```
