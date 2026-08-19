@@ -1,269 +1,650 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Nived Kumar Nagula | FraudShield</title>
-
-  <link rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-
-<header class="nav">
-
-  <div class="owner">
-    Nived Kumar Nagula
-  </div>
-
-  <div class="brand">
-    <span>◈</span> FraudShield
-  </div>
-
-  <div class="badge">
-    XGBOOST ML
-  </div>
-
-</header>
-
-
-<main class="container">
-
-  <section class="hero">
-
-    <div>
-
-      <p class="eyebrow">
-        MACHINE LEARNING TRANSACTION ANALYSIS
-      </p>
-
-      <h1>
-        Credit Card<br>
-        <span>Fraud Detection</span>
-      </h1>
-
-      <p class="sub">
-        Upload a transaction CSV and get a model-based
-        fraud probability using a trained XGBoost classifier.
-      </p>
-
-    </div>
-
-    <div class="shield">
-      🛡️
-    </div>
-
-  </section>
-
-
-  <section class="grid">
-
-
-    <!-- Upload Card -->
-
-    <div class="card">
-
-      <h2>
-        Analyze Transaction
-      </h2>
-
-      <p class="muted">
-        Upload a CSV containing the 30 model features:
-        Time, V1–V28 and Amount.
-      </p>
-
-
-      <form id="uploadForm">
-
-        <label class="upload">
-
-          <input
-            id="file"
-            type="file"
-            accept=".csv"
-            required
-          >
-
-          <span id="fileName">
-            Choose transaction CSV
-          </span>
-
-        </label>
-
-
-        <button type="submit">
-          Analyze with XGBoost
-          <span>→</span>
-        </button>
-
-      </form>
-
-
-      <p class="hint">
-
-        For a quick test, use the included
-        sample transaction CSV files.
-
-      </p>
-
-
-      <div class="sample-links">
-
-        <a href="/sample_legitimate_transaction.csv">
-          Download legitimate sample
-        </a>
-
-        <a href="/sample_fraud_transaction.csv">
-          Download fraud sample
-        </a>
-
-      </div>
-
-    </div>
-
-
-    <!-- Result Card -->
-
-    <div class="card result-card">
-
-      <div class="result-head">
-
-        <div>
-
-          <p class="eyebrow">
-            MODEL RESULT
-          </p>
-
-          <h2 id="result">
-            Waiting for transaction
-          </h2>
-
-        </div>
-
-
-        <div
-          id="icon"
-          class="result-icon"
-        >
-          ?
-        </div>
-
-      </div>
-
-
-      <div class="score-wrap">
-
-        <div
-          class="score"
-          id="score"
-        >
-          0%
-        </div>
-
-        <div
-          class="ring"
-          id="ring"
-        >
-
-          <div class="ring-inner"></div>
-
-        </div>
-
-      </div>
-
-
-      <div class="stats">
-
-        <div>
-
-          <span>
-            Fraud Probability
-          </span>
-
-          <strong id="fraud">
-            0%
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Legitimate Probability
-          </span>
-
-          <strong id="legit">
-            100%
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Risk Level
-          </span>
-
-          <strong id="risk">
-            —
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <p
-        id="note"
-        class="note"
-      >
-        Upload a transaction to calculate
-        the model probability.
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- Process -->
-
-  <section class="info">
-
-    <div>
-      <b>01</b>
-      <span>
-        Upload transaction features
-      </span>
-    </div>
-
-
-    <div>
-      <b>02</b>
-      <span>
-        XGBoost predicts fraud probability
-      </span>
-    </div>
-
-
-    <div>
-      <b>03</b>
-      <span>
-        Review risk and confidence
-      </span>
-    </div>
-
-  </section>
-
-
-</main>
-
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-
-</body>
-</html>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #07111f;
+    --bg-light: #0d1b2d;
+    --card: #0f2035;
+    --card-hover: #132842;
+    --border: #203954;
+    --text: #f4f8ff;
+    --muted: #8fa6c2;
+    --green: #54dfaa;
+    --green-dark: #1fa878;
+    --red: #ff647c;
+    --yellow: #ffc857;
+    --blue: #62a7ff;
+}
+
+body {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at 80% 10%, rgba(84, 223, 170, 0.08), transparent 25%),
+        radial-gradient(circle at 10% 20%, rgba(98, 167, 255, 0.08), transparent 25%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ================= HEADER ================= */
+
+.topbar {
+    width: 100%;
+    min-height: 76px;
+    padding: 16px 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(7, 17, 31, 0.92);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--green), var(--blue));
+    color: #06111e;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+.profile-name {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.profile-role {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+}
+
+.brand {
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.brand span {
+    color: var(--green);
+    margin-right: 6px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+    color: var(--muted);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(84, 223, 170, 0.8);
+}
+
+/* ================= MAIN ================= */
+
+.dashboard {
+    width: min(1200px, 90%);
+    margin: auto;
+}
+
+/* ================= HERO ================= */
+
+.hero {
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 65px 0 55px;
+}
+
+.hero-content {
+    max-width: 760px;
+}
+
+.eyebrow {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 0.98;
+    letter-spacing: -3px;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    color: var(--green);
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.7;
+    max-width: 700px;
+}
+
+.hero-shield {
+    width: 150px;
+    height: 150px;
+    border: 1px solid var(--border);
+    border-radius: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    background: linear-gradient(
+        145deg,
+        rgba(98, 167, 255, 0.12),
+        rgba(84, 223, 170, 0.05)
+    );
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+}
+
+/* ================= UPLOAD ================= */
+
+.upload-section,
+.result-panel,
+.model-panel,
+.table-section {
+    background: rgba(15, 32, 53, 0.82);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 30px;
+}
+
+.section-heading {
+    margin-bottom: 25px;
+}
+
+.section-heading h2 {
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.section-heading p {
+    color: var(--muted);
+}
+
+#uploadForm {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.upload-box {
+    flex: 1;
+    min-height: 145px;
+    border: 1px dashed #41607f;
+    border-radius: 18px;
+    background: rgba(7, 17, 31, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.upload-box:hover {
+    border-color: var(--green);
+    background: rgba(84, 223, 170, 0.05);
+}
+
+.upload-box input {
+    display: none;
+}
+
+.upload-icon {
+    font-size: 30px;
+    color: var(--green);
+    margin-bottom: 8px;
+}
+
+.upload-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.upload-name {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 7px;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.analyze-btn {
+    width: 230px;
+    border: none;
+    border-radius: 18px;
+    background: var(--green);
+    color: #06151b;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.analyze-btn:hover {
+    background: #7aebc1;
+    transform: translateY(-2px);
+}
+
+.analyze-btn span {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.sample-area {
+    margin-top: 18px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.sample-area a {
+    color: var(--green);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.sample-area a:hover {
+    text-decoration: underline;
+}
+
+/* ================= STATISTICS ================= */
+
+.statistics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card);
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 900;
+}
+
+.fraud-stat .stat-value {
+    color: var(--red);
+}
+
+.safe-stat .stat-value {
+    color: var(--green);
+}
+
+/* ================= RESULTS ================= */
+
+.result-grid {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-header h2 {
+    font-size: 28px;
+}
+
+.result-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #1d344f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.probability {
+    text-align: center;
+    padding: 35px 0 20px;
+}
+
+.probability-value {
+    font-size: clamp(55px, 7vw, 85px);
+    line-height: 1;
+    font-weight: 900;
+    color: var(--green);
+    letter-spacing: -4px;
+}
+
+.probability-label {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.probability-bar {
+    height: 9px;
+    background: #1c3047;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.probability-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        var(--green),
+        var(--yellow),
+        var(--red)
+    );
+    border-radius: inherit;
+    transition: width 0.7s ease;
+}
+
+.result-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 25px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.result-details div {
+    padding: 20px 15px;
+}
+
+.result-details div + div {
+    border-left: 1px solid var(--border);
+}
+
+.result-details span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.result-details strong {
+    font-size: 19px;
+}
+
+.result-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(98, 167, 255, 0.07);
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+/* ================= MODEL ================= */
+
+.model-panel h2 {
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+
+.model-panel > p {
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 25px;
+}
+
+.model-feature {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+}
+
+.model-feature span {
+    color: var(--muted);
+}
+
+.model-feature strong {
+    color: var(--green);
+}
+
+/* ================= TABLE ================= */
+
+.table-section {
+    margin-top: 20px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1.3px;
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 17px 15px;
+    border-bottom: 1px solid rgba(32, 57, 84, 0.6);
+    font-size: 13px;
+}
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 35px;
+}
+
+.risk-high {
+    color: var(--red);
+    font-weight: 800;
+}
+
+.risk-medium {
+    color: var(--yellow);
+    font-weight: 800;
+}
+
+.risk-low {
+    color: var(--green);
+    font-weight: 800;
+}
+
+/* ================= PROCESS ================= */
+
+.process {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 40px 0;
+}
+
+.process > div {
+    padding: 25px;
+    border-top: 1px solid var(--border);
+}
+
+.process span {
+    color: var(--green);
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.process strong {
+    display: block;
+    margin: 10px 0 7px;
+    font-size: 18px;
+}
+
+.process p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 6%;
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+footer strong {
+    color: var(--text);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+
+    .topbar {
+        padding: 14px 5%;
+    }
+
+    .brand {
+        display: none;
+    }
+
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-shield {
+        width: 100px;
+        height: 100px;
+        font-size: 48px;
+    }
+
+    #uploadForm {
+        flex-direction: column;
+    }
+
+    .analyze-btn {
+        width: 100%;
+        min-height: 60px;
+    }
+
+    .statistics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .dashboard {
+        width: 92%;
+    }
+
+    .profile-name {
+        font-size: 13px;
+    }
+
+    .status {
+        display: none;
+    }
+
+    .hero {
+        padding-top: 45px;
+    }
+
+    .hero h1 {
+        font-size: 46px;
+        letter-spacing: -2px;
+    }
+
+    .statistics {
+        grid-template-columns: 1fr;
+    }
+
+    .result-details {
+        grid-template-columns: 1fr;
+    }
+
+    .result-details div + div {
+        border-left: none;
+        border-top: 1px solid var(--border);
+    }
+
+    .process {
+        grid-template-columns: 1fr;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .sample-area {
+        flex-wrap: wrap;
+    }
+}
