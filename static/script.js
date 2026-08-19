@@ -1,11 +1,37 @@
 const form = document.getElementById("uploadForm");
-
 const fileInput = document.getElementById("file");
-
 const fileName = document.getElementById("fileName");
 
+const result = document.getElementById("result");
+const icon = document.getElementById("icon");
+const score = document.getElementById("score");
+const fraud = document.getElementById("fraud");
+const legit = document.getElementById("legit");
+const risk = document.getElementById("risk");
+const note = document.getElementById("note");
 
-/* Show selected filename */
+const probabilityFill =
+    document.getElementById("probabilityFill");
+
+const totalTransactions =
+    document.getElementById("totalTransactions");
+
+const fraudTransactions =
+    document.getElementById("fraudTransactions");
+
+const legitimateTransactions =
+    document.getElementById("legitimateTransactions");
+
+const averageProbability =
+    document.getElementById("averageProbability");
+
+const resultsTable =
+    document.getElementById("resultsTable");
+
+
+// ----------------------------------------------------
+// FILE NAME
+// ----------------------------------------------------
 
 fileInput.addEventListener("change", function () {
 
@@ -17,49 +43,48 @@ fileInput.addEventListener("change", function () {
     } else {
 
         fileName.textContent =
-            "Choose transaction CSV";
-
+            "No file selected";
     }
-
 });
 
 
-/* Submit CSV */
+// ----------------------------------------------------
+// FORM SUBMISSION
+// ----------------------------------------------------
 
 form.addEventListener("submit", async function (event) {
 
     event.preventDefault();
 
-
-    const file = fileInput.files[0];
-
-
-    if (!file) {
+    if (!fileInput.files.length) {
 
         alert("Please select a CSV file.");
 
         return;
-
     }
 
+
+    const file = fileInput.files[0];
 
     const formData = new FormData();
 
     formData.append("file", file);
 
 
-    const resultElement =
-        document.getElementById("result");
+    // Loading state
 
-    const noteElement =
-        document.getElementById("note");
+    result.textContent = "Analyzing...";
+    icon.textContent = "↻";
 
+    score.textContent = "—";
+    fraud.textContent = "—";
+    legit.textContent = "—";
+    risk.textContent = "Analyzing";
 
-    resultElement.textContent =
-        "Analyzing...";
+    note.textContent =
+        "Processing your transaction data...";
 
-    noteElement.textContent =
-        "XGBoost model is processing the transaction.";
+    probabilityFill.style.width = "0%";
 
 
     try {
@@ -73,139 +98,302 @@ form.addEventListener("submit", async function (event) {
         );
 
 
-        const data =
-            await response.json();
+        const data = await response.json();
 
+
+        // ------------------------------------------------
+        // SERVER ERROR
+        // ------------------------------------------------
 
         if (!response.ok) {
 
             throw new Error(
                 data.error ||
+                data.message ||
                 "Prediction failed."
             );
-
         }
 
 
-        if (
-            !data.results ||
-            data.results.length === 0
-        ) {
+        if (!data.results ||
+            data.results.length === 0) {
 
             throw new Error(
-                "No prediction was returned."
+                "No prediction results returned."
             );
-
         }
 
 
-        const result =
-            data.results[0];
+        const results = data.results;
+
+
+        // ------------------------------------------------
+        // STATISTICS
+        // ------------------------------------------------
+
+        const total =
+            results.length;
+
+
+        const fraudCount =
+            results.filter(
+                item =>
+                    item.prediction
+                        .toLowerCase()
+                        .includes("fraud")
+            ).length;
+
+
+        const legitimateCount =
+            total - fraudCount;
+
+
+        const probabilities =
+            results.map(
+                item =>
+                    Number(
+                        item.fraud_probability
+                    )
+            );
+
+
+        const average =
+            probabilities.reduce(
+                (sum, value) =>
+                    sum + value,
+                0
+            ) / probabilities.length;
+
+
+        totalTransactions.textContent =
+            total;
+
+
+        fraudTransactions.textContent =
+            fraudCount;
+
+
+        legitimateTransactions.textContent =
+            legitimateCount;
+
+
+        averageProbability.textContent =
+            average.toFixed(2) + "%";
+
+
+        // ------------------------------------------------
+        // DISPLAY FIRST RESULT
+        // ------------------------------------------------
+
+        const first =
+            results[0];
 
 
         const fraudProbability =
             Number(
-                result.fraud_probability
+                first.fraud_probability
             );
 
 
         const legitimateProbability =
             Number(
-                result.legitimate_probability
+                first.legitimate_probability
             );
 
 
-        /* Result */
-
-        resultElement.textContent =
-            result.prediction;
+        score.textContent =
+            fraudProbability.toFixed(2) + "%";
 
 
-        document.getElementById("score")
-            .textContent =
-            fraudProbability + "%";
+        fraud.textContent =
+            fraudProbability.toFixed(2) + "%";
 
 
-        document.getElementById("fraud")
-            .textContent =
-            fraudProbability + "%";
+        legit.textContent =
+            legitimateProbability.toFixed(2) + "%";
 
 
-        document.getElementById("legit")
-            .textContent =
-            legitimateProbability + "%";
+        risk.textContent =
+            first.risk;
 
 
-        document.getElementById("risk")
-            .textContent =
-            result.risk;
+        result.textContent =
+            first.prediction;
 
 
-        /* Icon */
+        probabilityFill.style.width =
+            Math.min(
+                Math.max(
+                    fraudProbability,
+                    0
+                ),
+                100
+            ) + "%";
 
-        const icon =
-            document.getElementById("icon");
 
+        // ------------------------------------------------
+        // RESULT COLOR / ICON
+        // ------------------------------------------------
 
         if (
-            result.prediction
+            first.prediction
                 .toLowerCase()
                 .includes("fraud")
         ) {
 
             icon.textContent = "!";
+            note.textContent =
+                "This transaction has been classified as potentially fraudulent.";
+
+            icon.style.color = "#ff647c";
+            result.style.color = "#ff647c";
+            risk.style.color = "#ff647c";
 
         } else {
 
             icon.textContent = "✓";
+            note.textContent =
+                "This transaction appears legitimate based on the model prediction.";
 
+            icon.style.color = "#54dfaa";
+            result.style.color = "#54dfaa";
+            risk.style.color = "#54dfaa";
         }
 
 
-        /* Ring */
+        // ------------------------------------------------
+        // RESULTS TABLE
+        // ------------------------------------------------
 
-        const degrees =
-            fraudProbability * 3.6;
-
-
-        const ringColor =
-            result.prediction
-                .toLowerCase()
-                .includes("fraud")
-                ? "#ff667a"
-                : "#49d6a4";
+        resultsTable.innerHTML = "";
 
 
-        document.getElementById("ring")
-            .style.background =
-            `conic-gradient(
-                ${ringColor} ${degrees}deg,
-                #172a3e ${degrees}deg
-            )`;
+        results.forEach(
+            (item, index) => {
+
+                const row =
+                    document.createElement("tr");
 
 
-        /* Note */
-
-        noteElement.textContent =
-            `XGBoost analyzed ${data.count} transaction${
-                data.count > 1 ? "s" : ""
-            }.`;
-
-    }
+                const fraudProbability =
+                    Number(
+                        item.fraud_probability
+                    ).toFixed(2);
 
 
-    catch (error) {
+                const legitimateProbability =
+                    Number(
+                        item.legitimate_probability
+                    ).toFixed(2);
 
-        resultElement.textContent =
-            "Prediction Error";
+
+                let riskClass =
+                    "risk-low";
 
 
-        noteElement.textContent =
-            error.message;
+                if (
+                    item.risk
+                        .toLowerCase()
+                        === "high"
+                ) {
 
+                    riskClass =
+                        "risk-high";
+
+                } else if (
+                    item.risk
+                        .toLowerCase()
+                        === "medium"
+                ) {
+
+                    riskClass =
+                        "risk-medium";
+                }
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${fraudProbability}%
+                    </td>
+
+                    <td>
+                        ${legitimateProbability}%
+                    </td>
+
+                    <td>
+                        ${item.prediction}
+                    </td>
+
+                    <td class="${riskClass}">
+                        ${item.risk}
+                    </td>
+
+                `;
+
+
+                resultsTable.appendChild(row);
+            }
+        );
+
+
+    } catch (error) {
 
         console.error(error);
 
+
+        result.textContent =
+            "Prediction Error";
+
+
+        icon.textContent =
+            "!";
+
+
+        score.textContent =
+            "0%";
+
+
+        fraud.textContent =
+            "0%";
+
+
+        legit.textContent =
+            "100%";
+
+
+        risk.textContent =
+            "—";
+
+
+        probabilityFill.style.width =
+            "0%";
+
+
+        note.textContent =
+            error.message ||
+            "Unable to analyze the CSV file.";
+
+
+        resultsTable.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="empty"
+                >
+                    ${error.message ||
+                    "Prediction failed."}
+                </td>
+
+            </tr>
+
+        `;
     }
 
 });
